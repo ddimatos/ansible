@@ -51,7 +51,7 @@ pip install -r docs/docsite/requirements.txt
 ```
 
 __Note:__
-The requirements.txt lack all the pacakges in my latest testing, till I fix that you will want to be sure all these are installed as well, the package usually not installed is __sphinx-markdown-tables__
+The requirements.txt lack some of the pacakges in my latest testing, till I fix that you will want to be sure all these are installed as well, the package usually not installed via the requirements.txt is __sphinx-markdown-tables__
 
 ```
 pip3 install straight.plugin
