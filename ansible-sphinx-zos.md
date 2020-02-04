@@ -11,7 +11,7 @@ mkdir ~/git/python-venv-ansible-zos
 ## Clone both repositories, __ansible__ and __ibm_zos_core__
 ```
 git clone git@github.com:ddimatos/ansible.git  
-git@github.ibm.com:zos-ansible/ibm_zos_core.git
+git clone git@github.ibm.com:zos-ansible/ibm_zos_core.git
 ```
 
 You should have two git repositories:
