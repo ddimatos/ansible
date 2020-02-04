@@ -419,7 +419,14 @@ def process_plugins(module_map, templates, outputname, output_dir, ansible_versi
 
         fname = module_map[module]['path']
         
-        if 'zos_' in fname:
+        # Get the exported env var `export IS_ZOS_MODULES="true"`
+        is_zos_modules=os.getenv("IS_ZOS_MODULES")
+        
+        # display.display("is_zos_modules %s ..." % is_zos_modules)
+        # display.display("is_zos_modules evaled %s ..." % (is_zos_modules.lower() in ("yes", "true", "True", "1")))
+        
+        # If IS_ZOS_MODULES and fname contains `zos_` then we generate HTML doc
+        if (is_zos_modules.lower() in ("yes", "true", "True", "1")) == True and 'zos_' in fname:
             display.vvvvv(pp.pformat(('process_plugins info: ', module_map[module])))
             
             # crash if module is missing documentation and not explicitly hidden from docs index
