@@ -418,140 +418,142 @@ def process_plugins(module_map, templates, outputname, output_dir, ansible_versi
         show_progress(module_index)
 
         fname = module_map[module]['path']
-        display.vvvvv(pp.pformat(('process_plugins info: ', module_map[module])))
-
-        # crash if module is missing documentation and not explicitly hidden from docs index
-        if module_map[module]['doc'] is None:
-            display.error("%s MISSING DOCUMENTATION" % (fname,))
-            _doc = {plugin_type: module,
-                    'version_added': '2.4',
-                    'filename': fname}
-            module_map[module]['doc'] = _doc
-            # continue
-
-        # Going to reference this heavily so make a short name to reference it by
-        doc = module_map[module]['doc']
-        display.vvvvv(pp.pformat(('process_plugins doc: ', doc)))
-
-        # add some defaults for plugins that dont have most of the info
-        doc['module'] = doc.get('module', module)
-        doc['version_added'] = doc.get('version_added', 'historical')
-
-        doc['plugin_type'] = plugin_type
-
-        if module_map[module]['deprecated'] and 'deprecated' not in doc:
-            display.warning("%s PLUGIN MISSING DEPRECATION DOCUMENTATION: %s" % (fname, 'deprecated'))
-
-        required_fields = ('short_description',)
-        for field in required_fields:
-            if field not in doc:
-                display.warning("%s PLUGIN MISSING field '%s'" % (fname, field))
-
-        not_nullable_fields = ('short_description',)
-        for field in not_nullable_fields:
-            if field in doc and doc[field] in (None, ''):
-                print("%s: WARNING: MODULE field '%s' DOCUMENTATION is null/empty value=%s" % (fname, field, doc[field]))
-
-        if 'description' in doc:
-            if isinstance(doc['description'], string_types):
-                doc['description'] = [doc['description']]
-            elif not isinstance(doc['description'], (list, tuple)):
-                raise AnsibleError("Description must be a string or list of strings.  Got %s"
-                                   % type(doc['description']))
-        else:
-            doc['description'] = []
-
-        if 'version_added' not in doc:
-            raise AnsibleError("*** ERROR: missing version_added in: %s ***\n" % module)
-
-        #
-        # The present template gets everything from doc so we spend most of this
-        # function moving data into doc for the template to reference
-        #
-
-        if module_map[module]['aliases']:
-            doc['aliases'] = module_map[module]['aliases']
-
-        # don't show version added information if it's too old to be called out
-        added = 0
-        if doc['version_added'] == 'historical':
-            del doc['version_added']
-        else:
-            added = doc['version_added']
-
-        # Strip old version_added for the module
-        if too_old(added):
-            del doc['version_added']
-
-        doc['option_keys'] = process_options(module, doc.get('options'))
-        doc['filename'] = fname
-        doc['source'] = module_map[module]['source']
-        doc['docuri'] = doc['module'].replace('_', '-')
-        doc['now_date'] = datetime.date.today().strftime('%Y-%m-%d')
-        doc['ansible_version'] = ansible_version
-
-        # check the 'deprecated' field in doc. We expect a dict potentially with 'why', 'version', and 'alternative' fields
-        # examples = module_map[module]['examples']
-        # print('\n\n%s: type of examples: %s\n' % (module, type(examples)))
-        # if examples and not isinstance(examples, (str, unicode, list)):
-        #    raise TypeError('module %s examples is wrong type (%s): %s' % (module, type(examples), examples))
-
-        # use 'examples' for 'plainexamples' if 'examples' is a string
-        if isinstance(module_map[module]['examples'], string_types):
-            doc['plainexamples'] = module_map[module]['examples']  # plain text
-        else:
-            doc['plainexamples'] = ''
-
-        doc['metadata'] = module_map[module]['metadata']
-
-        display.vvvvv(pp.pformat(module_map[module]))
-        if module_map[module]['returndocs']:
-            try:
-                doc['returndocs'] = yaml.safe_load(module_map[module]['returndocs'])
-                process_returndocs(doc['returndocs'])
-            except Exception as e:
-                print("%s:%s:yaml error:%s:returndocs=%s" % (fname, module, e, module_map[module]['returndocs']))
+        
+        if 'zos_' in fname:
+            display.vvvvv(pp.pformat(('process_plugins info: ', module_map[module])))
+            
+            # crash if module is missing documentation and not explicitly hidden from docs index
+            if module_map[module]['doc'] is None:
+                display.error("%s MISSING DOCUMENTATION" % (fname,))
+                _doc = {plugin_type: module,
+                        'version_added': '2.4',
+                        'filename': fname}
+                module_map[module]['doc'] = _doc
+                # continue
+            
+            # Going to reference this heavily so make a short name to reference it by
+            doc = module_map[module]['doc']
+            display.vvvvv(pp.pformat(('process_plugins doc: ', doc)))
+            
+            # add some defaults for plugins that dont have most of the info
+            doc['module'] = doc.get('module', module)
+            doc['version_added'] = doc.get('version_added', 'historical')
+            
+            doc['plugin_type'] = plugin_type
+            
+            if module_map[module]['deprecated'] and 'deprecated' not in doc:
+                display.warning("%s PLUGIN MISSING DEPRECATION DOCUMENTATION: %s" % (fname, 'deprecated'))
+            
+            required_fields = ('short_description',)
+            for field in required_fields:
+                if field not in doc:
+                    display.warning("%s PLUGIN MISSING field '%s'" % (fname, field))
+            
+            not_nullable_fields = ('short_description',)
+            for field in not_nullable_fields:
+                if field in doc and doc[field] in (None, ''):
+                    print("%s: WARNING: MODULE field '%s' DOCUMENTATION is null/empty value=%s" % (fname, field, doc[field]))
+            
+            if 'description' in doc:
+                if isinstance(doc['description'], string_types):
+                    doc['description'] = [doc['description']]
+                elif not isinstance(doc['description'], (list, tuple)):
+                    raise AnsibleError("Description must be a string or list of strings.  Got %s"
+                                       % type(doc['description']))
+            else:
+                doc['description'] = []
+            
+            if 'version_added' not in doc:
+                raise AnsibleError("*** ERROR: missing version_added in: %s ***\n" % module)
+            
+            #
+            # The present template gets everything from doc so we spend most of this
+            # function moving data into doc for the template to reference
+            #
+            
+            if module_map[module]['aliases']:
+                doc['aliases'] = module_map[module]['aliases']
+            
+            # don't show version added information if it's too old to be called out
+            added = 0
+            if doc['version_added'] == 'historical':
+                del doc['version_added']
+            else:
+                added = doc['version_added']
+            
+            # Strip old version_added for the module
+            if too_old(added):
+                del doc['version_added']
+            
+            doc['option_keys'] = process_options(module, doc.get('options'))
+            doc['filename'] = fname
+            doc['source'] = module_map[module]['source']
+            doc['docuri'] = doc['module'].replace('_', '-')
+            doc['now_date'] = datetime.date.today().strftime('%Y-%m-%d')
+            doc['ansible_version'] = ansible_version
+            
+            # check the 'deprecated' field in doc. We expect a dict potentially with 'why', 'version', and 'alternative' fields
+            # examples = module_map[module]['examples']
+            # print('\n\n%s: type of examples: %s\n' % (module, type(examples)))
+            # if examples and not isinstance(examples, (str, unicode, list)):
+            #    raise TypeError('module %s examples is wrong type (%s): %s' % (module, type(examples), examples))
+            
+            # use 'examples' for 'plainexamples' if 'examples' is a string
+            if isinstance(module_map[module]['examples'], string_types):
+                doc['plainexamples'] = module_map[module]['examples']  # plain text
+            else:
+                doc['plainexamples'] = ''
+            
+            doc['metadata'] = module_map[module]['metadata']
+            
+            display.vvvvv(pp.pformat(module_map[module]))
+            if module_map[module]['returndocs']:
+                try:
+                    doc['returndocs'] = yaml.safe_load(module_map[module]['returndocs'])
+                    process_returndocs(doc['returndocs'])
+                except Exception as e:
+                    print("%s:%s:yaml error:%s:returndocs=%s" % (fname, module, e, module_map[module]['returndocs']))
+                    doc['returndocs'] = None
+            else:
                 doc['returndocs'] = None
-        else:
-            doc['returndocs'] = None
-
-        doc['author'] = doc.get('author', ['UNKNOWN'])
-        if isinstance(doc['author'], string_types):
-            doc['author'] = [doc['author']]
-
-        display.v('about to template %s' % module)
-        display.vvvvv(pp.pformat(doc))
-        try:
-            text = templates['plugin'].render(doc)
-        except Exception as e:
-            display.warning(msg="Could not parse %s due to %s" % (module, e))
-            continue
-
-        if LooseVersion(jinja2.__version__) < LooseVersion('2.10'):
-            # jinja2 < 2.10's indent filter indents blank lines.  Cleanup
-            text = re.sub(' +\n', '\n', text)
-
-        write_data(text, output_dir, outputname, module)
-
-        # Create deprecation stub pages for deprecated aliases
-        if module_map[module]['aliases']:
-            for alias in module_map[module]['aliases']:
-                if alias in module_map[module]['aliases_deprecated']:
-                    doc['alias'] = alias
-
-                    display.v('about to template %s (deprecation alias %s)' % (module, alias))
-                    display.vvvvv(pp.pformat(doc))
-                    try:
-                        text = templates['plugin_deprecation_stub'].render(doc)
-                    except Exception as e:
-                        display.warning(msg="Could not parse %s (deprecation alias %s) due to %s" % (module, alias, e))
-                        continue
-
-                    if LooseVersion(jinja2.__version__) < LooseVersion('2.10'):
-                        # jinja2 < 2.10's indent filter indents blank lines.  Cleanup
-                        text = re.sub(' +\n', '\n', text)
-
-                    write_data(text, output_dir, outputname, alias)
+            
+            doc['author'] = doc.get('author', ['UNKNOWN'])
+            if isinstance(doc['author'], string_types):
+                doc['author'] = [doc['author']]
+            
+            display.v('about to template %s' % module)
+            display.vvvvv(pp.pformat(doc))
+            try:
+                text = templates['plugin'].render(doc)
+            except Exception as e:
+                display.warning(msg="Could not parse %s due to %s" % (module, e))
+                continue
+            
+            if LooseVersion(jinja2.__version__) < LooseVersion('2.10'):
+                # jinja2 < 2.10's indent filter indents blank lines.  Cleanup
+                text = re.sub(' +\n', '\n', text)
+            
+            write_data(text, output_dir, outputname, module)
+            
+            # Create deprecation stub pages for deprecated aliases
+            if module_map[module]['aliases']:
+                for alias in module_map[module]['aliases']:
+                    if alias in module_map[module]['aliases_deprecated']:
+                        doc['alias'] = alias
+            
+                        display.v('about to template %s (deprecation alias %s)' % (module, alias))
+                        display.vvvvv(pp.pformat(doc))
+                        try:
+                            text = templates['plugin_deprecation_stub'].render(doc)
+                        except Exception as e:
+                            display.warning(msg="Could not parse %s (deprecation alias %s) due to %s" % (module, alias, e))
+                            continue
+            
+                        if LooseVersion(jinja2.__version__) < LooseVersion('2.10'):
+                            # jinja2 < 2.10's indent filter indents blank lines.  Cleanup
+                            text = re.sub(' +\n', '\n', text)
+            
+                        write_data(text, output_dir, outputname, alias)
 
 
 def process_categories(plugin_info, categories, templates, output_dir, output_name, plugin_type):
