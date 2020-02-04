@@ -112,4 +112,22 @@ cd docs/docsite/_build
 tar -zcvf /tmp/ibm-zos-core-html.tar.gz html/
 ```
 
+# Failures
+The scripts don't usually fail fast, keep an eye on the output an look for failures, this example was quite early on in the script and serves as a good example:
 
+```
+PYTHONPATH=../../lib ../../hacking/build-ansible.py document-plugins -t rst --template-dir=../templates --module-dir=../../lib/ansible/modules -o rst/modules/ -l zos_data_set,zos_job_output,zos_job_query,zos_job_submit
+Evaluating module files...
+../../lib/ansible/modules/ibm_zos_core/zos_job_query.py:zos_job_query:yaml error:mapping values are not allowed here
+  in "<unicode string>", line 2, column 8:
+    changed:
+           ^:returndocs=i
+changed:
+    description: True if the state was changed, otherwise False
+    returned: always
+    type: bool
+failed:
+    description: True if zos_job_query failed, othewise False
+    returned: always
+    type: bool
+```
