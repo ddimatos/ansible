@@ -89,6 +89,11 @@ You can use `clean` after to clean up generated `.rst` and `html` files. Its not
 make clean
 ```
 
+Set the environment varible `IS_ZOS_MODULES` to true if only files that start with prefix `zos_` will be generated, otherwise you should set it to "false";
+```
+export IS_ZOS_MODULES="true"
+```
+  
 Instruct the Ansible scripts  which modules to build doc for (this will run sphinx):
 ```
 MODULES=zos_data_set,zos_job_output,zos_job_query,zos_job_submit  make webdocs
