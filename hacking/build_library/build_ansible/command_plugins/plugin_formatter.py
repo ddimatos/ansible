@@ -420,7 +420,7 @@ def process_plugins(module_map, templates, outputname, output_dir, ansible_versi
         fname = module_map[module]['path']
         
         # Get the exported env var `export IS_ZOS_MODULES="true"`
-        is_zos_modules=os.getenv("IS_ZOS_MODULES")
+        is_zos_modules=os.getenv("IS_ZOS_MODULES","false")
         
         # display.display("is_zos_modules %s ..." % is_zos_modules)
         # display.display("is_zos_modules evaled %s ..." % (is_zos_modules.lower() in ("yes", "true", "True", "1")))
