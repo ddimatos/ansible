@@ -42,7 +42,7 @@ Update the Pip version in the virtual environment:
 pip install --upgrade pip
 ```
 
-## Prepare virtual environment with `sphinx` dependencies
+## Prepare virtual environment with __sphinx__ dependencies
 
 Install required Python packages:
 ```
